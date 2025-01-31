@@ -100,7 +100,7 @@ func (c *CCache) Unmarshal(b []byte) error {
 	}
 	c.DefaultPrincipal = parsePrincipal(b, &p, c, &endian)
 	for p < len(b) {
-		cred, err := parseCredential(b, &p, c, &endian)
+		cred, err := ParseCredential(b, &p, c, &endian)
 		if err != nil {
 			return err
 		}
