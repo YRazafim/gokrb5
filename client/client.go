@@ -108,6 +108,54 @@ func NewClientFromCCache(c *credentials.CCache, krb5conf *config.Config, setting
 	return cl, nil
 }
 
+// NewClientFromCred create a client from a cred.
+func NewClientFromCred(cred *credentials.Credential, krb5conf *config.Config, settings ...func(*Settings)) (*Client, error) {
+	creds := new(credentials.Credentials)
+	creds.SetUserName(cred.Client.PrincipalName.PrincipalNameString())
+	creds.SetRealm(cred.Client.Realm)
+	creds.SetCName(cred.Client.PrincipalName)
+
+	cl := &Client{
+		Credentials: creds,
+		Config:      krb5conf,
+		settings:    NewSettings(settings...),
+		sessions: &sessions{
+			Entries: make(map[string]*session),
+		},
+		cache: NewCache(),
+	}
+
+	var tgt messages.Ticket
+	err := tgt.Unmarshal(cred.Ticket)
+	if err != nil {
+		return return
+	}
+	cl.sessions.Entries[cred.Client.Realm] = &session{
+		realm:      cred.Client.Realm,
+		authTime:   cred.AuthTime,
+		endTime:    cred.EndTime,
+		renewTill:  cred.RenewTill,
+		tgt:        tgt,
+		sessionKey: cred.Key,
+	}
+
+	var tkt messages.Ticket
+	err = tkt.Unmarshal(cred.Ticket)
+	if err != nil {
+		return
+	}
+	cl.cache.addEntry(
+		tkt,
+		cred.AuthTime,
+		cred.StartTime,
+		cred.EndTime,
+		cred.RenewTill,
+		cred.Key,
+	)
+
+	return cl, nil
+}
+
 // Key returns the client's encryption key for the specified encryption type.
 // The key can be retrieved either from the keytab or generated from the client's password.
 // If the client has both a keytab and a password defined the keytab is favoured as the source for the key
