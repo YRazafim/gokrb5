@@ -1,4 +1,4 @@
-replace github.com/jcmturner/gokrb5/v8 => github.com/yrazafim/gokrb5/v8
+module github.com/jcmturner/gokrb5/v8
 
 go 1.16
 
