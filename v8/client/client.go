@@ -131,7 +131,7 @@ func NewClientFromCred(cred *credentials.Credential, krb5conf *config.Config, se
 	var tgt messages.Ticket
 	err := tgt.Unmarshal(cred.Ticket)
 	if err != nil {
-		return return
+		return cl, err
 	}
 	cl.sessions.Entries[cred.Client.Realm] = &session{
 		realm:      cred.Client.Realm,
@@ -145,7 +145,7 @@ func NewClientFromCred(cred *credentials.Credential, krb5conf *config.Config, se
 	var tkt messages.Ticket
 	err = tkt.Unmarshal(cred.Ticket)
 	if err != nil {
-		return
+		return cl, err
 	}
 	cl.cache.addEntry(
 		tkt,
