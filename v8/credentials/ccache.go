@@ -150,7 +150,7 @@ func parsePrincipal(b []byte, p *int, c *CCache, e *binary.ByteOrder) (princ pri
 	return princ
 }
 
-func parseCredential(b []byte, p *int, c *CCache, e *binary.ByteOrder) (cred *Credential, err error) {
+func ParseCredential(b []byte, p *int, c *CCache, e *binary.ByteOrder) (cred *Credential, err error) {
 	cred = new(Credential)
 	cred.Client = parsePrincipal(b, p, c, e)
 	cred.Server = parsePrincipal(b, p, c, e)
